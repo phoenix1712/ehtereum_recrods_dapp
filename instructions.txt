@@ -1,0 +1,26 @@
+node_modules/.bin/ganache-cli
+
+node_modules/.bin/solcjs --bin --abi Record.sol
+
+Run in node in a node window
+
+Web3 = require('web3')
+web3 = new Web3("http://localhost:8545")
+web3.eth.getAccounts(console.log)
+bytecode = fs.readFileSync('Record_sol_Record.bin').toString()
+abi = JSON.parse(fs.readFileSync('Record_sol_Record.abi').toString())
+deployedContract = new web3.eth.Contract(abi)
+authIDs=['deptcse','ogapstamu']
+deployedContract.deploy({
+  data: bytecode,
+  arguments: [authIDs.map(name => web3.utils.asciiToHex(name))]
+}).send({
+  from: '0x53Ff1f149D0463f3cb6B6FB633e8d0807345ae5D',
+  gas: 1500000,
+  gasPrice: web3.utils.toWei('0.00003', 'ether')
+}).then((newContractInstance) => {
+  deployedContract.options.address = newContractInstance.options.address
+  console.log(newContractInstance.options.address)
+});
+
+0x44526aa031f4C4b5Fcd0Db2c474E6110882B97D1

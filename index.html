@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello World DApp</title>
+  <link href='https://fonts.googleapis.com/css?family=Open Sans:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+</head>
+<body class="container">
+  Auth ID :
+  <input type="password" id="auth" />
+  Student ID :
+  <input type="text" id="student" />
+  Value : 
+  <input type="text" id="record" />
+  <a href="#" onclick="updateRecord()" class="btn btn-primary">Update</a>
+  <a href="#" onclick="fetchRecord()" class="btn btn-primary">Fetch</a>
+</body>
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+<script src="./index.js"></script>
+</html>
