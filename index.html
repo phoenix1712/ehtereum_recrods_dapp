@@ -10,12 +10,17 @@
   <input type="password" id="auth" />
   Student ID :
   <input type="text" id="student" />
-  Value : 
+  Value :
   <input type="text" id="record" />
+  <input type="file"
+       id="record_file" name="file"
+       accept="pdf" onchange="uploadFile()">
   <a href="#" onclick="updateRecord()" class="btn btn-primary">Update</a>
   <a href="#" onclick="fetchRecord()" class="btn btn-primary">Fetch</a>
 </body>
 <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>
+<script src="md5.js"></script>
 <script src="./index.js"></script>
 </html>
