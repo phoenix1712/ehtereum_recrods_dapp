@@ -3,23 +3,25 @@ pragma solidity >=0.4.0 <0.6.0;
 
 contract Record {
 
-  mapping (uint256 => uint256) public studentRecords;
+  mapping (uint256 => bytes16) public studentRecords;
 
   uint256[] public studentList;
   bytes32[] public authList;
-  
+
   constructor(bytes32[] memory authIDs) public {
     authList = authIDs;
   }
 
-  function fetchRecord(uint256 studentID) view public returns (uint256) {
+  function fetchRecord(uint256 studentID) view public returns (bytes16) {
     require(validStudent(studentID));
     return studentRecords[studentID];
   }
 
-  function updateRecord(bytes32 authID, uint256 studentID, uint256 record) public {
+  function updateRecord(bytes32 authID, uint256 studentID, bytes16 record) public {
     require(validAuthority(authID));
-    studentList.push(studentID);
+    if(!validStudent(studentID)){
+      studentList.push(studentID);  
+    }
     studentRecords[studentID] = record;
   }
 

@@ -4,10 +4,10 @@ web3.eth.getAccounts().then((f) => {
  account = f[0];
 })
 
-abi = JSON.parse('[{"constant":false,"inputs":[{"name":"authID","type":"bytes32"},{"name":"studentID","type":"uint256"},{"name":"record","type":"uint256"}],"name":"updateRecord","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"authID","type":"bytes32"}],"name":"validAuthority","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"studentList","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"studentID","type":"uint256"}],"name":"fetchRecord","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"studentID","type":"uint256"}],"name":"validStudent","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"authList","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"studentRecords","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"authIDs","type":"bytes32[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]')
+abi = JSON.parse('[{"constant":false,"inputs":[{"name":"authID","type":"bytes32"},{"name":"studentID","type":"uint256"},{"name":"record","type":"bytes16"}],"name":"updateRecord","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"authID","type":"bytes32"}],"name":"validAuthority","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"studentList","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"studentID","type":"uint256"}],"name":"fetchRecord","outputs":[{"name":"","type":"bytes16"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"studentID","type":"uint256"}],"name":"validStudent","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"authList","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"studentRecords","outputs":[{"name":"","type":"bytes16"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"authIDs","type":"bytes32[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]')
 
 contract = new web3.eth.Contract(abi);
-contract.options.address = "0x332ddbC8Da9EA94156b3cAD84C42237935c116a7";
+contract.options.address = "0x831E2a73428Fe5058513Eb0AAF2546b9f49E7279";
 // update this contract address with your contract address
 
 var pdfDataURL;
@@ -17,25 +17,40 @@ var pdfHash;
 function updateRecord() {
  student = $("#student").val();
  auth = $("#auth").val();
- record = $("#record").val();
- console.log(student);
 
- contract.methods.updateRecord(web3.utils.asciiToHex(auth), student,record).send({from: account}).then((f) => {
-   $("#record").val("");
- })
+ if(typeof pdfHash === 'undefined' || pdfHash === "" || student === ""){
+   if(student === ""){
+     alert("Enter Student ID.");
+   } else if(typeof pdfHash === 'undefined' || pdfHash === ""){
+     alert("Upload a file.");
+   } else {
+      alert("Enter Student ID, \n Upload a file.");
+   }
+ } else {
+   contract.methods.updateRecord(web3.utils.asciiToHex(auth), student, "0x"+pdfHash).send({from: account}).then((f) => {
+     alert("Record has been updated.")
+     // S3.put(pdfDataURL);
+     // pdfDataURL = "";
+     // pdfHash = "";
+     // $("#record_file").replaceWith($("#record_file").val('').clone(true));
+   });
+
+ }
 }
 
 function fetchRecord() {
  student = $("#student").val();
- console.log(student);
-
- contract.methods.fetchRecord(student).call().then((f) => {
-   $("#record").val(f);
+ var pdfHashFetched;
+ contract.methods.fetchRecord(student).call().then((pdfHashFetched) => {
+   // pdfDataURL = S3.get()
+   if("0x"+md5(pdfDataURL) == pdfHashFetched) {
+     var pdfAsArray = convertDataURIToBinary(pdfDataURL);
+     var pdfjsLib = window['pdfjs-dist/build/pdf'];
+     downloadFile(new Blob([pdfAsArray]), student+".pdf");
+   } else {
+     alert("The file has been tampered.");
+   }
  })
-
- var pdfAsArray = convertDataURIToBinary(pdfDataURL);
- var pdfjsLib = window['pdfjs-dist/build/pdf'];
- downloadFile(new Blob([pdfAsArray]), student+".pdf");
 }
 
 function uploadFile(){

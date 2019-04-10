@@ -6,15 +6,17 @@
   <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
 </head>
 <body class="container">
+  <br><br>
   Auth ID :
   <input type="password" id="auth" />
+  (* Only required for update)
+  <br><br>
   Student ID :
-  <input type="text" id="student" />
-  Value :
-  <input type="text" id="record" />
+  <input type="text" id="student" required/><br><br>
+  Please select the record file (* Only required for update) :
   <input type="file"
        id="record_file" name="file"
-       accept="pdf" onchange="uploadFile()">
+       accept="application/pdf" onchange="uploadFile()"> <br><br>
   <a href="#" onclick="updateRecord()" class="btn btn-primary">Update</a>
   <a href="#" onclick="fetchRecord()" class="btn btn-primary">Fetch</a>
 </body>

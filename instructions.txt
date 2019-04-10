@@ -15,7 +15,7 @@ deployedContract.deploy({
   data: bytecode,
   arguments: [authIDs.map(name => web3.utils.asciiToHex(name))]
 }).send({
-  from: '0x53Ff1f149D0463f3cb6B6FB633e8d0807345ae5D',
+  from: '0x2aC1d22635149764eEa47F8e78DCA2D7bd7EAEF7',
   gas: 1500000,
   gasPrice: web3.utils.toWei('0.00003', 'ether')
 }).then((newContractInstance) => {
@@ -23,4 +23,8 @@ deployedContract.deploy({
   console.log(newContractInstance.options.address)
 });
 
-0x44526aa031f4C4b5Fcd0Db2c474E6110882B97D1
+0x332ddbC8Da9EA94156b3cAD84C42237935c116a7
+
+
+git config --global user.name "phoenix1712"
+git config --global user.email "vihangpatel1712@gmail.com"
