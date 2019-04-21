@@ -7,12 +7,23 @@ web3.eth.getAccounts().then((f) => {
 abi = JSON.parse('[{"constant":false,"inputs":[{"name":"authID","type":"bytes32"},{"name":"studentID","type":"uint256"},{"name":"record","type":"bytes16"}],"name":"updateRecord","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"authID","type":"bytes32"}],"name":"validAuthority","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"studentList","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"studentID","type":"uint256"}],"name":"fetchRecord","outputs":[{"name":"","type":"bytes16"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"studentID","type":"uint256"}],"name":"validStudent","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"authList","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"studentRecords","outputs":[{"name":"","type":"bytes16"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"authIDs","type":"bytes32[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]')
 
 contract = new web3.eth.Contract(abi);
-contract.options.address = "0x831E2a73428Fe5058513Eb0AAF2546b9f49E7279";
+contract.options.address = "0x5befd959E960fF54cc25CDF11d615802577fBbfC";
 // update this contract address with your contract address
+
+AWS.config.credentials.get(function(err) {
+    if (err) alert(err);
+    console.log(AWS.config.credentials);
+});
+
+var bucketName = 'csce678-project'; // Enter your bucket name
+var bucket = new AWS.S3({
+    params: {
+        Bucket: bucketName
+    }
+});
 
 var pdfDataURL;
 var pdfHash;
-
 
 function updateRecord() {
  student = $("#student").val();
@@ -29,10 +40,20 @@ function updateRecord() {
  } else {
    contract.methods.updateRecord(web3.utils.asciiToHex(auth), student, "0x"+pdfHash).send({from: account}).then((f) => {
      alert("Record has been updated.")
-     // S3.put(pdfDataURL);
-     // pdfDataURL = "";
-     // pdfHash = "";
-     // $("#record_file").replaceWith($("#record_file").val('').clone(true));
+     var keyName = student + '.txt';
+     content = pdfDataURL;
+     var params = {
+         Key: keyName,
+         Body: content,
+         ACL: 'public-read'
+     };
+     bucket.putObject(params, function(err, data) {
+         if (err) {
+             results.innerHTML = 'ERROR: ' + err;
+         } else {
+             console.log(data);
+         }
+     });
    });
 
  }
@@ -40,16 +61,23 @@ function updateRecord() {
 
 function fetchRecord() {
  student = $("#student").val();
- var pdfHashFetched;
  contract.methods.fetchRecord(student).call().then((pdfHashFetched) => {
-   // pdfDataURL = S3.get()
-   if("0x"+md5(pdfDataURL) == pdfHashFetched) {
-     var pdfAsArray = convertDataURIToBinary(pdfDataURL);
-     var pdfjsLib = window['pdfjs-dist/build/pdf'];
-     downloadFile(new Blob([pdfAsArray]), student+".pdf");
-   } else {
-     alert("The file has been tampered.");
-   }
+   bucket.getObject({
+       Key: student+'.txt'
+   }, function(err, data) {
+     if (err) {
+         alert("The file has been tampered.");
+     } else {
+       var pdfDataURL = new TextDecoder("utf-8").decode(data.Body);
+       if("0x"+md5(pdfDataURL) == pdfHashFetched) {
+         var pdfAsArray = convertDataURIToBinary(pdfDataURL);
+         var pdfjsLib = window['pdfjs-dist/build/pdf'];
+         downloadFile(new Blob([pdfAsArray]), student+".pdf");
+       } else {
+         alert("The file has been tampered.");
+       }
+     }
+   });
  })
 }
 

@@ -23,7 +23,7 @@ deployedContract.deploy({
   console.log(newContractInstance.options.address)
 });
 
-0x332ddbC8Da9EA94156b3cAD84C42237935c116a7
+0x311f2e41c7371200be0f517ed2F28687a9dB4F54
 
 
 git config --global user.name "phoenix1712"
