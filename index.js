@@ -80,7 +80,10 @@ function fetchRecord() {
        }
      }
    });
- })
+ }).catch((error) => {
+    console.log('Error occurred!', error);
+    alert("Check your Student ID and password!");
+ });
 }
 
 function updatePassword() {
