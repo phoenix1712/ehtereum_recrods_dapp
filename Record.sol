@@ -1,45 +1,59 @@
+
 pragma solidity >=0.4.0 <0.6.0;
 // We have to specify what version of compiler this code will compile with
 
+library Library {
+  struct data {
+     bytes16 record;
+     bytes16 password;
+     bool isValue;
+   }
+}
+
 contract Record {
+  using Library for Library.data;
+  mapping(uint64 => Library.data) studentRecords;
 
-  mapping (uint256 => bytes16) public studentRecords;
-
-  uint256[] public studentList;
-  bytes32[] public authList;
-
+  mapping(bytes32 => bool) authList;
+  
   constructor(bytes32[] memory authIDs) public {
-    authList = authIDs;
+    for(uint i = 0; i < authIDs.length; i++) {
+      authList[authIDs[i]] = true;
+    }
   }
 
-  function fetchRecord(uint256 studentID) view public returns (bytes16) {
+  function fetchRecord(uint64 studentID, bytes16 password) view public returns (bytes16) {
     require(validStudent(studentID));
-    return studentRecords[studentID];
+    require(passwordAuth(studentID, password));
+    return studentRecords[studentID].record;
   }
 
-  function updateRecord(bytes32 authID, uint256 studentID, bytes16 record) public {
+  function updateRecord(bytes32 authID, uint64 studentID, bytes16 record, bytes16 password) public {
     require(validAuthority(authID));
     if(!validStudent(studentID)){
-      studentList.push(studentID);  
+      studentRecords[studentID].isValue = true;
     }
-    studentRecords[studentID] = record;
+    studentRecords[studentID].password = password;
+    studentRecords[studentID].record = record;
   }
 
-  function validStudent(uint256 studentID) view public returns (bool) {
-    for(uint i = 0; i < studentList.length; i++) {
-      if (studentList[i] == studentID) {
-        return true;
-      }
-    }
-    return false;
+  function updatePassword(uint64 studentID, bytes16 oldPassword, bytes16 newPassword) public{
+    require(validStudent(studentID));
+    require(passwordAuth(studentID, password));
+    studentRecords[studentID].password = newPassword;
+    
+  }
+
+  function validStudent(uint64 studentID) view private returns (bool) {
+    
+    return studentRecords[studentID].isValue;
+  }
+
+  function passwordAuth(uint64 studentID, bytes16 password) view public returns (bool) {
+    return studentRecords[studentID].password == password;
   }
 
   function validAuthority(bytes32 authID) view public returns (bool) {
-    for(uint i = 0; i < authList.length; i++) {
-      if (authList[i] == authID) {
-        return true;
-      }
-    }
-    return false;
+    return authList[authID];
   }
 }
