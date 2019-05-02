@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hello World DApp</title>
+  <title>Decentralized Howdy!</title>
   <link href='https://fonts.googleapis.com/css?family=Open Sans:400,700' rel='stylesheet' type='text/css'>
   <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
 </head>
@@ -13,12 +13,25 @@
   <br><br>
   Student ID :
   <input type="text" id="student" required/><br><br>
+  Password :
+  <input type="password" id="password"/><br><br>
   Please select the record file (* Only required for update) :
   <input type="file"
        id="record_file" name="file"
        accept="application/pdf" onchange="uploadFile()"> <br><br>
   <a href="#" onclick="updateRecord()" class="btn btn-primary">Update</a>
   <a href="#" onclick="fetchRecord()" class="btn btn-primary">Fetch</a>
+  <br><br><br><br><br><br>
+
+  Student ID :
+  <input type="text" id="studentID" required/><br><br>
+  Old Password :
+  <input type="password" id="oldPassword"/><br><br>
+  New Password :
+  <input type="password" id="newPassword"/><br><br>
+
+  <a href="#" onclick="updatePassword()" class="btn btn-primary">Update Password</a>
+
 </body>
 <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>

@@ -4,10 +4,10 @@ web3.eth.getAccounts().then((f) => {
  account = f[0];
 })
 
-abi = JSON.parse('[{"constant":false,"inputs":[{"name":"authID","type":"bytes32"},{"name":"studentID","type":"uint256"},{"name":"record","type":"bytes16"}],"name":"updateRecord","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"authID","type":"bytes32"}],"name":"validAuthority","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"studentList","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"studentID","type":"uint256"}],"name":"fetchRecord","outputs":[{"name":"","type":"bytes16"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"studentID","type":"uint256"}],"name":"validStudent","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"authList","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"studentRecords","outputs":[{"name":"","type":"bytes16"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"authIDs","type":"bytes32[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]')
+abi = JSON.parse('[{"constant":true,"inputs":[{"name":"studentID","type":"uint64"},{"name":"password","type":"bytes16"}],"name":"fetchRecord","outputs":[{"name":"","type":"bytes16"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"authID","type":"bytes32"}],"name":"validAuthority","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"authID","type":"bytes32"},{"name":"studentID","type":"uint64"},{"name":"record","type":"bytes16"},{"name":"password","type":"bytes16"}],"name":"updateRecord","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"studentID","type":"uint64"},{"name":"oldPassword","type":"bytes16"},{"name":"newPassword","type":"bytes16"}],"name":"updatePassword","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"studentID","type":"uint64"},{"name":"password","type":"bytes16"}],"name":"passwordAuth","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"authIDs","type":"bytes32[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]')
 
 contract = new web3.eth.Contract(abi);
-contract.options.address = "0x5befd959E960fF54cc25CDF11d615802577fBbfC";
+contract.options.address = "0xD957b6c533459a66981eEAF01cb7699fdEc9b061";
 // update this contract address with your contract address
 
 AWS.config.credentials.get(function(err) {
@@ -28,6 +28,7 @@ var pdfHash;
 function updateRecord() {
  student = $("#student").val();
  auth = $("#auth").val();
+ password = md5($("#password").val());
 
  if(typeof pdfHash === 'undefined' || pdfHash === "" || student === ""){
    if(student === ""){
@@ -38,7 +39,7 @@ function updateRecord() {
       alert("Enter Student ID, \n Upload a file.");
    }
  } else {
-   contract.methods.updateRecord(web3.utils.asciiToHex(auth), student, "0x"+pdfHash).send({from: account}).then((f) => {
+   contract.methods.updateRecord(web3.utils.asciiToHex(auth), student, "0x"+pdfHash, "0x"+password).send({from: account}).then((f) => {
      alert("Record has been updated.")
      var keyName = student + '.txt';
      content = pdfDataURL;
@@ -61,7 +62,8 @@ function updateRecord() {
 
 function fetchRecord() {
  student = $("#student").val();
- contract.methods.fetchRecord(student).call().then((pdfHashFetched) => {
+ password = md5($("#password").val());
+ contract.methods.fetchRecord(student, "0x"+password).call().then((pdfHashFetched) => {
    bucket.getObject({
        Key: student+'.txt'
    }, function(err, data) {
@@ -79,6 +81,15 @@ function fetchRecord() {
      }
    });
  })
+}
+
+function updatePassword() {
+   student = $("#studentID").val();
+   oldPassword = md5($("#oldPassword").val());
+   newPassword = md5($("#newPassword").val());
+   contract.methods.updatePassword(student, "0x"+oldPassword, "0x"+newPassword).send({from: account}).then((f) => {
+     alert("Password has been updated.")
+   });
 }
 
 function uploadFile(){
