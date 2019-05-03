@@ -28,6 +28,7 @@ var pdfHash;
 function updateRecord() {
  student = $("#student").val();
  auth = $("#auth").val();
+ plain_password = $("#password").val();
  password = md5($("#password").val());
 
  if(typeof pdfHash === 'undefined' || pdfHash === "" || student === ""){
@@ -38,6 +39,10 @@ function updateRecord() {
    } else {
       alert("Enter Student ID, \n Upload a file.");
    }
+ } else if (auth === ""){
+    alert("Authentication ID cannot be empty for update operation!");  
+ } else if (plain_password === ""){
+    alert("Password cannot be empty!");  
  } else {
    contract.methods.updateRecord(web3.utils.asciiToHex(auth), student, "0x"+pdfHash, "0x"+password).send({from: account}).then((f) => {
      alert("Record has been updated.")
@@ -55,6 +60,9 @@ function updateRecord() {
              console.log(data);
          }
      });
+   }).catch((error) => {
+      console.log('Error occurred!', error);
+      alert("Error! Check your Authentication ID.");
    });
 
  }
