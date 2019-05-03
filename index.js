@@ -98,9 +98,20 @@ function updatePassword() {
    student = $("#studentID").val();
    oldPassword = md5($("#oldPassword").val());
    newPassword = md5($("#newPassword").val());
-   contract.methods.updatePassword(student, "0x"+oldPassword, "0x"+newPassword).send({from: account}).then((f) => {
-     alert("Password has been updated.")
-   });
+
+   if(student === "" || $("#oldPassword").val() === "" || $("#newPassword").val() === "")
+   {
+    alert("Student ID, old password and new password cannot be empty!");
+   }
+   else
+   {
+    contract.methods.updatePassword(student, "0x"+oldPassword, "0x"+newPassword).send({from: account}).then((f) => {
+      alert("Password has been updated.")
+     }).catch((error) => {
+        console.log('Error occurred!', error);
+        alert("Check your Student ID and old password!");
+      }); 
+   }
 }
 
 function uploadFile(){
