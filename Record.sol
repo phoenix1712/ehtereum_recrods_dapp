@@ -13,9 +13,8 @@ library Library {
 contract Record {
   using Library for Library.data;
   mapping(uint64 => Library.data) studentRecords;
-
   mapping(bytes32 => bool) authList;
-  
+
   constructor(bytes32[] memory authIDs) public {
     for(uint i = 0; i < authIDs.length; i++) {
       authList[authIDs[i]] = true;
@@ -39,13 +38,11 @@ contract Record {
 
   function updatePassword(uint64 studentID, bytes16 oldPassword, bytes16 newPassword) public{
     require(validStudent(studentID));
-    require(passwordAuth(studentID, password));
+    require(passwordAuth(studentID, oldPassword));
     studentRecords[studentID].password = newPassword;
-    
   }
 
   function validStudent(uint64 studentID) view private returns (bool) {
-    
     return studentRecords[studentID].isValue;
   }
 
