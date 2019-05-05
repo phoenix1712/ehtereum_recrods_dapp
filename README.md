@@ -43,7 +43,7 @@ deployedContract.deploy({
 });
 </pre>
 
-9. Do not forget to put one of the account address for **from** field in above code. Remove the comment from there too. Upon successful execution of the above set of commands, we will the address of our smart contract in the terminal. **Note down this address**
+9. Do not forget to put one of the account address for **from** field in above code. Remove the comment from there too. Upon successful execution of the above set of commands, we will get the address of our smart contract in the terminal. **Note down this address**
 10. Edit the file named ``index.js`` and replace the smart contract address in line 10 - ``contract.options.address = "CONTRACT ADDRESS";`` Put the address that you obtained in the previous step. 
 11. Final step is to just open the file named ``index.html`` in your browser. The GUI should look like following:
 <img src="gui_dapp.png" width="500px" height="500px"/>
